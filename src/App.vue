@@ -30,5 +30,16 @@ export default {
     components: {
         "nav-content": NavContent
     },
+    computed: {
+        isLoggedIn() {
+            return (this.$store.state.authToken);
+        },
+    },
+    mounted() {
+        this.$store.state.authToken = localStorage.getItem("authToken");
+        this.$store.state.userId = localStorage.getItem("userId");
+        this.$store.state.role = localStorage.getItem("role");
+        this.$store.state.isEmployed = localStorage.getItem("isEmployed");
+    }
 };
 </script>

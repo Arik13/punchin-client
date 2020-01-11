@@ -7,12 +7,14 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        isDrawerOpen: true
+        isDrawerOpen: true,
+        authToken: null,
+        userId: null,
+        role: null,
+        isEmployed: null,
     },
     getters: {
-        getDummyJobs(state) {
-            return state.dummyJobs;
-        }
+
     },
     mutations: {
         toggleDrawerOpen(state) {
@@ -20,41 +22,57 @@ export default new Vuex.Store({
         }
     },
     actions: {
-        // eslint-disable-next-line
-        getResource({state}, payload) {
-            console.log("Getting Resource: ", payload.route);
-            axios.get(payload.route).then(res => {
-                payload.callback(res.data);
-            });
-        },
-        // eslint-disable-next-line
-        postResource({state}, payload) {
-            return new Promise((resolve, reject) => {
-                console.log(payload);
-                axios.post(payload.route, payload.data).then(res => {
-                    console.log(res);
-                    resolve();
-                }).catch(err => {
-                    console.log(err);
-                    reject();
-                });
+        accessResource({state}, payload) {
+            console.log(payload.method, ": ", payload.route);
+            console.log("Payload: ", payload);
+            axios({
+                method: payload.method,
+                url: payload.route,
+                data: payload.data,
+                headers: {Authorization: "Bearer " + state.authToken}
             })
-        },
-        // eslint-disable-next-line
-        putResource({state}, payload) {
-            return new Promise((resolve, reject) => {
-                console.log(payload);
-                axios.put(payload.route, payload.data).then(res => {
-                    console.log(res);
-                    resolve();
-                }).catch(err => {
+                .then(res => {
+                    if (payload.callback) {
+                        payload.callback(res.data);
+                    }
+                    console.log("Response: ", res);
+                })
+                .catch(err => {
                     console.log(err);
-                    reject();
                 });
-            })
+        },
+        login({dispatch, state}, payload) {
+            payload.method = "PUT";
+            payload.route = "/users";
+            payload.callback = (data) => {
+                console.log("Logged In, storing auth data");
+                console.log(data);
+                state.authToken = data.token;
+                state.userId = data.userId;
+                state.role = data.role;
+                state.isEmployed = data.isEmployed;
+
+                localStorage.setItem("authToken", data.token);
+                localStorage.setItem("userId", data.userId);
+                localStorage.setItem("role", data.role);
+                localStorage.setItem("isEmployed", data.isEmployed);
+                payload.reroute();
+            }
+            dispatch("accessResource", payload);
+        },
+        logout({state}, payload) {
+            state.authToken = null;
+            state.userId = null;
+            state.role = null;
+            state.isEmployed = null;
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("role");
+            localStorage.removeItem("isEmployed");
+            payload.reroute();
         },
         toggleDrawerOpen({commit}) {
             commit("toggleDrawerOpen");
-        }
+        },
     }
 });

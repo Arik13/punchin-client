@@ -44,13 +44,16 @@ export default {
             password: "",
             name: "",
             roles: ["Employee", "Contractor"],
-            radioGroup: 0
+            radioGroup: 0,
+            emailRules: [],
+            passwordRules: [],
+            nameRules: [],
         }
     },
     methods: {
         signup() {
-            this.$store.dispatch("postResource",
-            {
+            this.$store.dispatch("accessResource", {
+                method: "POST",
                 route: "/users",
                 data:
                     {

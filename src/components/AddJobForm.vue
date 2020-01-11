@@ -34,8 +34,9 @@ export default {
     },
     methods: {
         addJob() {
-            this.$store.dispatch("postResource",
+            this.$store.dispatch("accessResource",
             {
+                method: "POST",
                 route: "/jobs",
                 data: {jobName: this.jobName, address: this.address}
             })

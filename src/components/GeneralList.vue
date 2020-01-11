@@ -1,15 +1,14 @@
 <template>
     <div>
         <v-list>
-            <template v-if="employeeList.length != 0">
+            <template v-if="listItems.length != 0">
                 <v-list-item
-                    v-for="(employee, index) in employeeList"
+                    v-for="(listItem, index) in listItems"
                     :key="index"
-                    :to="{path: pathify(employee._id)}"
+                    :to="{path: pathify(listItem._id)}"
                 >
                     <v-list-item-content>
-                        <v-list-item-title>{{ employee.name }}</v-list-item-title>
-                        <v-list-item-subtitle>{{ employee.email }}</v-list-item-subtitle>
+                        <slot></slot>
                     </v-list-item-content>
                 </v-list-item>
             </template>
@@ -27,24 +26,23 @@
 export default {
     data() {
         return {
-            employeeList: [],
-            resourcePath: "/employees",
-            formPath: "/addemployee",
+            listItems: [],
         }
     },
+    props: ["resourcePath", "formPath"],
     mounted() {
         this.$store.dispatch("accessResource", {
             method: "GET",
             route: this.resourcePath,
             callback: (result) => {
                 console.log("Result", result);
-                this.employeeList = result;
+                this.listItems = result;
             }
         });
     },
     watch: {
-        jobList() {
-            console.log("List Items: ", this.jobList);
+        listItems() {
+            console.log("List Items: ", this.listItems);
         }
     },
     methods: {

@@ -27,24 +27,27 @@
 export default {
     data() {
         return {
-            email: "",
-            password: "",
+            email: "ariksven@gmail.com",
+            password: "testing",
+            emailRules: [],
+            passwordRules: [],
         }
     },
     methods: {
         login() {
-            this.$store.dispatch("putResource",
-            {
-                route: "/users",
-                data:
-                    {
+            this.$store.dispatch("login", {
+                data: {
                         email: this.email,
                         password: this.password,
-                    }
+                    },
+                reroute: () => {
+                    console.log("rerouting");
+                    this.$router.push("/");
+                }
             })
-                .then(() => {
-                    //this.$refs.form.reset();
-                });
+            .then(() => {
+                //this.$refs.form.reset();
+            });
         }
     }
 }
